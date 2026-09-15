@@ -1,0 +1,12 @@
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\bin\Debug\net40\notifier.json
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\bin\Debug\net40\ChalakNotifier.exe.config
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\bin\Debug\net40\ChalakNotifier.exe
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\bin\Debug\net40\ChalakNotifier.pdb
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\obj\Debug\net40\ChalakNotifier.csproj.AssemblyReference.cache
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\obj\Debug\net40\ChalakNotifier.GeneratedMSBuildEditorConfig.editorconfig
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\obj\Debug\net40\ChalakNotifier.AssemblyInfoInputs.cache
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\obj\Debug\net40\ChalakNotifier.AssemblyInfo.cs
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\obj\Debug\net40\ChalakNotifier.csproj.CoreCompileInputs.cache
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\obj\Debug\net40\ChalakNotifier.exe
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\obj\Debug\net40\ChalakNotifier.pdb
+C:\Mac\Home\Desktop\ChalakNotifier\ChalakNotifier\obj\Debug\net40\ChalakNotifier.exe.config

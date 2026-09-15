@@ -1,0 +1,8 @@
+{
+  "ProjectKey": "slug-type-licence",
+  "ProjectName": "چالاک",
+    "NotificationsUrl": "https://chalakapp.ir/api/v1/notifications",
+  "IntervalMinutes": 15,
+  "MainAppPath": "ChalakApp.exe",
+  "Dev": false
+}
