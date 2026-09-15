@@ -18,6 +18,9 @@ namespace ChalakNotifier
         readonly System.Windows.Forms.Timer timer;
         readonly ToolStripMenuItem enabledItem;
         readonly Control ui; // برای برگشت از Thread پس‌زمینه به UI
+        readonly Queue<AppNotification> pendingBalloons = new Queue<AppNotification>();
+        AppNotification currentBalloon;
+        bool clickHandled;
         int checking;
 
         public NotifierContext(ProjectSettings project)
@@ -46,10 +49,12 @@ namespace ChalakNotifier
             {
                 Icon = LoadIcon(),
                 Text = Truncate("اعلان‌های " + project.ProjectName, 63),
-                Visible = project.Dev, // در حالت عادی مخفی؛ فقط Dev آیکون دارد
+                Visible = true, // برای نمایش اعلان ویندوزی (Balloon) آیکون باید فعال باشد
                 ContextMenuStrip = menu
             };
             tray.DoubleClick += delegate { OpenMainApp(); };
+            tray.BalloonTipClicked += delegate { BalloonClicked(); };
+            tray.BalloonTipClosed += delegate { BalloonFinished(); };
 
             timer = new System.Windows.Forms.Timer { Interval = project.IntervalMinutes * 60000 };
             timer.Tick += delegate { CheckAsync(); };
@@ -88,20 +93,75 @@ namespace ChalakNotifier
 
         void ShowAll(List<AppNotification> list)
         {
-            if (project.Sound && list.Count > 0)
-                NotificationSound.Play(project.SoundFile);
-
             foreach (var n in list)
             {
+                pendingBalloons.Enqueue(n);
+                store.MarkShown(n.id);
                 var item = n;
-                var popup = new NotificationPopup(project.ProjectName, item);
-                popup.Acknowledged += delegate { Acknowledge(item.id); };
-                popup.OpenRequested += delegate { OpenUrl(item.url); };
-                popup.Show();
-
-                store.MarkShown(item.id);
                 Background(delegate { api.MarkDelivered(item.id); });
             }
+
+            ShowNextBalloon();
+        }
+
+        /// <summary>
+        /// اعلان‌ها یکی‌یکی به‌صورت اعلان ویندوزی (Balloon/Toast) نمایش داده می‌شوند
+        /// چون ویندوز هم‌زمان فقط یک Balloon نشان می‌دهد
+        /// </summary>
+        void ShowNextBalloon()
+        {
+            if (currentBalloon != null) return;
+            if (pendingBalloons.Count == 0) return;
+
+            currentBalloon = pendingBalloons.Dequeue();
+
+            var icon = ToolTipIcon.Info;
+            if (!project.Sound)
+                icon = ToolTipIcon.None;
+            else if (!string.IsNullOrEmpty(project.SoundFile))
+            {
+                icon = ToolTipIcon.None;
+                NotificationSound.Play(project.SoundFile);
+            }
+
+            var title = string.IsNullOrEmpty(currentBalloon.title) ? project.ProjectName : currentBalloon.title;
+            var body = string.IsNullOrEmpty(currentBalloon.body) ? " " : currentBalloon.body;
+
+            try
+            {
+                tray.ShowBalloonTip(BalloonTimeout, Truncate(title, 63), Truncate(body, 255), icon);
+            }
+            catch
+            {
+                currentBalloon = null;
+            }
+        }
+
+        /// <summary>کلیک روی اعلان = تایید؛ اگر لینک داشته باشد باز می‌شود</summary>
+        void BalloonClicked()
+        {
+            var n = currentBalloon;
+            if (n == null) return;
+
+            currentBalloon = null;
+            clickHandled = true;
+            Acknowledge(n.id);
+            OpenUrl(n.url);
+            ShowNextBalloon();
+        }
+
+        /// <summary>بسته شدن بدون کلیک = «بعداً»؛ ۲۴ ساعت بعد دوباره یادآوری می‌شود</summary>
+        void BalloonFinished()
+        {
+            // در بعضی نسخه‌های ویندوز بعد از کلیک، Closed هم فرستاده می‌شود
+            if (clickHandled)
+            {
+                clickHandled = false;
+                return;
+            }
+
+            currentBalloon = null;
+            ShowNextBalloon();
         }
 
         void Acknowledge(long id)
@@ -162,6 +222,8 @@ namespace ChalakNotifier
         {
             return s.Length <= max ? s : s.Substring(0, max);
         }
+
+        const int BalloonTimeout = 20000;
 
         void Exit()
         {
