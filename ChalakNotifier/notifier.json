@@ -4,5 +4,7 @@
     "NotificationsUrl": "https://chalakapp.ir/api/v1/notifications",
   "IntervalMinutes": 15,
   "MainAppPath": "ChalakApp.exe",
+  "Sound": true,
+  "SoundFile": "",
   "Dev": false
 }

@@ -88,6 +88,9 @@ namespace ChalakNotifier
 
         void ShowAll(List<AppNotification> list)
         {
+            if (project.Sound && list.Count > 0)
+                NotificationSound.Play(project.SoundFile);
+
             foreach (var n in list)
             {
                 var item = n;

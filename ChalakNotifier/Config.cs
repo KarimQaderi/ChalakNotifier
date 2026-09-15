@@ -14,6 +14,12 @@ namespace ChalakNotifier
         public int IntervalMinutes { get; set; }
         public string MainAppPath { get; set; }
 
+        /// <summary>پخش صدای اعلان ویندوز هنگام نمایش نوتیفیکیشن (پیش‌فرض: فعال)</summary>
+        public bool Sound { get; set; }
+
+        /// <summary>مسیر فایل wav دلخواه؛ خالی یعنی صدای پیش‌فرض ویندوز</summary>
+        public string SoundFile { get; set; }
+
         /// <summary>فقط برای توسعه: نمایش آیکون در Tray. در حالت عادی Agent کاملاً مخفی است</summary>
         public bool Dev { get; set; }
 
@@ -23,7 +29,10 @@ namespace ChalakNotifier
             if (!File.Exists(path))
                 throw new FileNotFoundException("فایل notifier.json کنار برنامه پیدا نشد.", path);
 
-            var s = Json.Parse<ProjectSettings>(File.ReadAllText(path));
+            var raw = File.ReadAllText(path);
+            var s = Json.Parse<ProjectSettings>(raw);
+            if (s != null && raw.IndexOf("\"Sound\"", StringComparison.OrdinalIgnoreCase) < 0)
+                s.Sound = true;
             if (s == null || string.IsNullOrEmpty(s.ProjectKey))
                 throw new InvalidDataException("ProjectKey در notifier.json مشخص نشده است.");
 
